@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agendatitel Generator ✨</title>
+    <meta name="description" content="Luchtige en creatieve titels voor jouw bila's, standups en andere vergaderingen">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --accent: #f59e0b;
+            --bg: #0f0f1a;
+            --surface: #1a1a2e;
+            --surface-2: #252540;
+            --text: #e2e8f0;
+            --text-muted: #94a3b8;
+            --success: #10b981;
+            --border: rgba(255,255,255,0.08);
+            --radius: 16px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            background-image:
+                radial-gradient(ellipse at 20% 20%, rgba(99,102,241,0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(245,158,11,0.1) 0%, transparent 50%);
+        }
+
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem 4rem;
+        }
+
+        header {
+            text-align: center;
+            padding: 3rem 0 2.5rem;
+        }
+
+        .logo { font-size: 3rem; margin-bottom: 0.5rem; }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #a5b4fc, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.75rem;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-grid { display: grid; gap: 1.25rem; }
+
+        .field label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .field input,
+        .field select {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.2s;
+            outline: none;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+
+        .field select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2394a3b8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            padding-right: 2.5rem;
+        }
+
+        .field input:focus,
+        .field select:focus { border-color: var(--primary); }
+
+        .field select option { background: #252540; }
+
+        .tone-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .tone-pill {
+            padding: 0.5rem 1rem;
+            border-radius: 100px;
+            border: 1px solid var(--border);
+            background: var(--surface-2);
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .tone-pill:hover { border-color: var(--primary); color: var(--text); }
+
+        .tone-pill.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .generate-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s;
+            box-shadow: 0 4px 20px rgba(99,102,241,0.4);
+            font-family: inherit;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(99,102,241,0.5);
+        }
+
+        .generate-btn:active { transform: translateY(0); }
+
+        .results { display: none; }
+        .results.visible { display: block; }
+
+        .results-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .results-header h2 {
+            font-size: 1rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .title-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            animation: slideIn 0.35s ease forwards;
+            opacity: 0;
+            transition: border-color 0.2s;
+        }
+
+        .title-card:hover { border-color: rgba(99,102,241,0.4); }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .title-index {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            min-width: 1.5rem;
+            opacity: 0.5;
+        }
+
+        .title-text {
+            flex: 1;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        .icon-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .icon-btn:hover {
+            background: var(--surface-2);
+            color: var(--text);
+            border-color: var(--primary);
+        }
+
+        .icon-btn.copied {
+            color: var(--success);
+            border-color: var(--success);
+        }
+
+        footer {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 3rem;
+            opacity: 0.6;
+        }
+
+        @media (max-width: 500px) {
+            h1 { font-size: 1.75rem; }
+            .card { padding: 1.25rem; }
+            .tone-pill { font-size: 0.82rem; padding: 0.4rem 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <div class="logo">📋</div>
+        <h1>Agendatitel Generator</h1>
+        <p>Luchtige titels voor bila's, standups &amp; meer</p>
+    </header>
+
+    <div class="card">
+        <div class="form-grid">
+            <div class="field">
+                <label>Type overleg</label>
+                <select id="meetingType">
+                    <option value="bila">Bila (bilateraal)</option>
+                    <option value="standup">Standup / Daily</option>
+                    <option value="brainstorm">Brainstorm</option>
+                    <option value="retro">Retrospective</option>
+                    <option value="kickoff">Kick-off</option>
+                    <option value="checkin">Check-in</option>
+                    <option value="evaluatie">Evaluatie</option>
+                    <option value="werkoverleg">Werkoverleg</option>
+                    <option value="planningssessie">Planningssessie</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label>Onderwerp <span style="font-weight:400;text-transform:none;font-size:0.8rem">(optioneel)</span></label>
+                <input type="text" id="topic" placeholder="bijv. Q3 planning, teamdynamiek, nieuwe strategie…">
+            </div>
+
+            <div class="field">
+                <label>Sfeer</label>
+                <div class="tone-pills" id="tonePills">
+                    <div class="tone-pill active" data-tone="luchtig">😄 Luchtig</div>
+                    <div class="tone-pill" data-tone="energiek">⚡ Energiek</div>
+                    <div class="tone-pill" data-tone="mysterieus">🕵️ Mysterieus</div>
+                    <div class="tone-pill" data-tone="professioneel">💼 Professioneel</div>
+                </div>
+            </div>
+
+            <button class="generate-btn" id="generateBtn" onclick="generateTitles()">
+                ✨ Genereer 6 titels
+            </button>
+        </div>
+    </div>
+
+    <div class="results" id="results">
+        <div class="results-header">
+            <h2 id="resultsLabel">Titels</h2>
+        </div>
+        <div id="titleList"></div>
+    </div>
+
+    <footer>Gemaakt voor leukere vergaderingen 🚀</footer>
+</div>
+
+<script>
+    let selectedTone = 'luchtig';
+
+    document.querySelectorAll('.tone-pill').forEach(pill => {
+        pill.addEventListener('click', () => {
+            document.querySelectorAll('.tone-pill').forEach(p => p.classList.remove('active'));
+            pill.classList.add('active');
+            selectedTone = pill.dataset.tone;
+        });
+    });
+
+    const adjectives = [
+        'legendarische', 'epische', 'magische', 'geweldige', 'memorabele',
+        'briljante', 'verrassende', 'energieke', 'inspirerende', 'onvergetelijke',
+        'historische', 'fantastische', 'sublieme', 'iconische', 'baanbrekende'
+    ];
+
+    const codeNames = [
+        'Phoenix', 'Falcon', 'Nova', 'Titan', 'Orion', 'Apollo',
+        'Nexus', 'Atlas', 'Horizon', 'Eclipse', 'Comet', 'Vega', 'Pulsar', 'Zenith'
+    ];
+
+    const numbers = ['01', '02', '03', 'I', 'II', 'III', 'X', '42', '007'];
+
+    const defaultTopics = [
+        'de grote plannen', 'het mysterie', 'de volgende stap', 'ons geheim wapen',
+        'de uitdaging', 'het meesterplan', 'de toekomst', 'ons avontuur',
+        'het grote idee', 'de doorbraak'
+    ];
+
+    const typeSpecific = {
+        bila: [
+            'Tête-à-tête: {topic}',
+            'Bilateraal spektakel — {topic} editie',
+            'Twee hoofden, één doel: {topic}',
+            'De {adj} één-op-één: {topic} op tafel',
+            'Koffie voor twee: {topic} bespreken',
+            'De beruchte bila: {topic} als hoofdact',
+            'Diplo-meeting: {topic} agenda'
+        ],
+        standup: [
+            'De dagelijkse reünie: {topic} update',
+            'Vijf minuten roem: {topic}',
+            'Stand up & shine — {topic} check',
+            'Snelle ronde: {topic} in de spotlight',
+            'Dagstart deluxe: {topic} editie',
+            'Morning power-up: {topic}',
+            'De dagelijkse check: {topic} staat centraal'
+        ],
+        brainstorm: [
+            'Ideeënnstorm: {topic} als inspiratiebron',
+            'Creatief geweld: {topic} verkennen',
+            'De {adj} brainstorm over {topic}',
+            'Denktank sessie: {topic} onder de loep',
+            'Witte flip-over energie: {topic}',
+            'Out-of-the-box over {topic}',
+            'Ideeën als confetti: {topic}'
+        ],
+        retro: [
+            'Terugblik met sterretjes: {topic}',
+            'De eerlijke spiegel: {topic} bespreken',
+            'Wat ging goed, wat kan beter: {topic}',
+            'De {adj} retrospective over {topic}',
+            'Lessons learned deluxe: {topic}',
+            'Even stilstaan bij {topic}',
+            'Van ervaring naar verbetering: {topic}'
+        ],
+        kickoff: [
+            'En we zijn af! {Topic} kick-off',
+            'De grote start: {topic} uit de startblokken',
+            '3, 2, 1… {topic} gelanceerd!',
+            'Welcome to the {topic} show',
+            'First-day energy: {topic} kick-off',
+            'Begin goed: {topic} van start',
+            'Het begint nu: {topic} kick-off'
+        ],
+        checkin: [
+            'Pulsemeting: hoe staat {topic} ervoor?',
+            'Snelle check: {topic} in kaart',
+            'Even landen: {topic} check-in',
+            'Hoe gaat het echt met {topic}?',
+            'Vinger aan de pols: {topic}',
+            'Kort maar krachtig: {topic} check',
+            'Status {topic}: alles goed?'
+        ],
+        evaluatie: [
+            'De grote evaluatie: {topic} doorgelicht',
+            'Rapportcijfer tijd: {topic} sessie',
+            'Wat heeft {topic} ons gebracht?',
+            'De {adj} evaluatie over {topic}',
+            'Balans opmaken: {topic} in perspectief',
+            'Hoe scoort {topic}? De evaluatie',
+            '{Topic} onder het vergrootglas'
+        ],
+        werkoverleg: [
+            'Werkoverleg deluxe: {topic} aan bod',
+            'De operationele reünie: {topic}',
+            'Aan de slag: {topic} op de agenda',
+            'Business as usual (maar leuker): {topic}',
+            'Het {adj} werkoverleg: {topic} editie',
+            'Gewoon even overleggen: {topic}',
+            'Praktisch en to-the-point: {topic}'
+        ],
+        planningssessie: [
+            'De {adj} planningssessie: {topic}',
+            'Agenda maken is een kunst: {topic}',
+            'Op naar {topic}: de planningssessie',
+            'Strategisch nadenken over {topic}',
+            'De toekomst staat open: {topic} plannen',
+            'Wat, wie, wanneer: {topic} editie',
+            'Stip op de horizon: {topic}'
+        ]
+    };
+
+    const toneTemplates = {
+        luchtig: [
+            'Spoiler alert: we gaan het over {topic} hebben 🎉',
+            'De {adj} {type}: {topic} als ster van de show',
+            '{Topic}-klets: onze gezellige {type}',
+            'Koffie & {topic} — de {type} van de week',
+            'Houston, we hebben een {type} 🚀',
+            '{Type} speedrun: {topic} in recordtijd',
+            'Geen formele agenda, wél {topic}: onze {type}',
+            'De legendarische {type} over {topic}',
+            'Goed nieuws: er is {type}! Onderwerp: {topic}',
+            '{Topic}: het mini-feestje 🎈',
+            'Bijzondere uitzending: {type} over {topic}',
+            'We praten over {topic} — en dat is oké 😄',
+            'Geen pak nodig: {type} over {topic}',
+            'Relaxed maar effectief: {topic} via {type}'
+        ],
+        energiek: [
+            '🔥 Fuel voor de week: {type} over {topic}',
+            'Level up! {Topic} bespreken als een pro',
+            'Tijd om te shinen: {type} — {topic} editie',
+            'Go time! {Type} × {topic}',
+            'Vol gas richting {topic}: de power-{type}',
+            'Game on: {topic} staat op de agenda ⚡',
+            'Sprint naar succes: {topic} via {type}',
+            'Energie laden: {topic} — onze {type}',
+            'No limits: {topic} als springplank',
+            'Momentum builder: {topic} sessie 🚀',
+            'Winnen begint met praten: {type} over {topic}',
+            '100% focus op {topic} — let\'s go!',
+            'Powerplay: {type} over {topic}',
+            'Volle kracht vooruit: {topic}'
+        ],
+        mysterieus: [
+            'Operatie {codename}: {topic} ontrafeld 🕵️',
+            'Geheim dossier #{number}: de {topic} {type}',
+            'Achter de schermen: {topic} in het vizier',
+            'Missie {codename}: {topic} bespreken',
+            'Wat niemand je vertelt over {topic} — onze {type}',
+            'Verborgen agenda: {topic} in de schijnwerpers',
+            'Project {codename} fase {number}: {topic}',
+            'De {type} die alles verandert: {topic}',
+            'Classified: {type} over {topic} 🔒',
+            'De onthulling: {topic} eindelijk op tafel 🔍',
+            'Tussen de regels door: {type} over {topic}',
+            'Alleen voor ingewijden: {topic}',
+            'Fluisteroverleg: {topic} editie',
+            '{Topic} — niet voor iedereen'
+        ],
+        professioneel: [
+            'Strategic rendezvous: {topic}',
+            '{Topic} deep-dive — een productieve {type}',
+            'Align & shine: {topic} in kaart gebracht',
+            'Sync-moment: {topic} op de rails 💼',
+            'Focus sessie: {topic} — richting bepalen',
+            'Resultaatgericht overleg: {topic} edition',
+            'De {type} met impact: {topic} bespreken',
+            'Slimme samenwerking: {topic} als agenda',
+            '{Topic}: een doelgericht gesprek',
+            'Van inzicht naar actie: {topic}',
+            'Stakeholder sync: {topic} in focus',
+            'Beslissingstijd: {topic} op tafel',
+            'Efficiency first: {type} over {topic}',
+            'Clear & concise: {topic} sessie'
+        ]
+    };
+
+    function pick(arr) {
+        return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function capitalize(str) {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    function fillTemplate(tpl, topic, typeLabel) {
+        const t = topic || pick(defaultTopics);
+        return tpl
+            .replace(/\{topic\}/g, t)
+            .replace(/\{Topic\}/g, capitalize(t))
+            .replace(/\{type\}/g, typeLabel)
+            .replace(/\{Type\}/g, capitalize(typeLabel))
+            .replace(/\{adj\}/g, pick(adjectives))
+            .replace(/\{codename\}/g, pick(codeNames))
+            .replace(/\{number\}/g, pick(numbers));
+    }
+
+    function generateTitles() {
+        const meetingType = document.getElementById('meetingType').value;
+        const topic = document.getElementById('topic').value.trim();
+        const typeLabel = document.getElementById('meetingType')
+            .selectedOptions[0].text.split(' ')[0].toLowerCase();
+
+        const specific = typeSpecific[meetingType] || [];
+        const general  = toneTemplates[selectedTone] || [];
+
+        // Weight type-specific templates higher by duplicating them
+        const pool = [...specific, ...specific, ...general];
+        const shuffled = pool.sort(() => Math.random() - 0.5);
+
+        const selected = [];
+        const used = new Set();
+        for (const tpl of shuffled) {
+            if (selected.length >= 6) break;
+            const filled = fillTemplate(tpl, topic, typeLabel);
+            if (!used.has(filled)) {
+                used.add(filled);
+                selected.push(filled);
+            }
+        }
+
+        renderResults(selected);
+    }
+
+    function renderResults(titles) {
+        const resultsEl = document.getElementById('results');
+        const listEl    = document.getElementById('titleList');
+        const labelEl   = document.getElementById('resultsLabel');
+
+        const toneEmojis = { luchtig: '😄', energiek: '⚡', mysterieus: '🕵️', professioneel: '💼' };
+        const toneNames  = { luchtig: 'Luchtig', energiek: 'Energiek', mysterieus: 'Mysterieus', professioneel: 'Professioneel' };
+        const typeText   = document.getElementById('meetingType').selectedOptions[0].text;
+
+        labelEl.textContent = toneEmojis[selectedTone] + ' ' + toneNames[selectedTone] + ' ' + typeText + ' titels';
+
+        listEl.innerHTML = '';
+        titles.forEach((title, i) => {
+            const escapedTitle = title.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+            const card = document.createElement('div');
+            card.className = 'title-card';
+            card.style.animationDelay = (i * 70) + 'ms';
+            card.innerHTML =
+                '<span class="title-index">' + (i + 1) + '</span>' +
+                '<span class="title-text">' + title + '</span>' +
+                '<button class="icon-btn" title="Kopieer naar klembord" data-title="' + escapedTitle + '" onclick="copyTitle(this)">📋</button>';
+            listEl.appendChild(card);
+        });
+
+        resultsEl.classList.add('visible');
+        resultsEl.style.display = 'block';
+        setTimeout(() => resultsEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+    }
+
+    function copyTitle(btn) {
+        const text = btn.dataset.title;
+        navigator.clipboard.writeText(text).then(() => {
+            btn.textContent = '✅';
+            btn.classList.add('copied');
+            setTimeout(() => { btn.textContent = '📋'; btn.classList.remove('copied'); }, 2000);
+        }).catch(() => {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            btn.textContent = '✅';
+            setTimeout(() => { btn.textContent = '📋'; }, 2000);
+        });
+    }
+
+    document.getElementById('topic').addEventListener('keydown', e => {
+        if (e.key === 'Enter') generateTitles();
+    });
+</script>
+</body>
+</html>
